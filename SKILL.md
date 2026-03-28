@@ -61,3 +61,76 @@ Extract from the detected file:
 - **Project root**: absolute path to the directory containing CLAUDE.md
 
 The skill never runs from its own repo — always from inside the target project.
+
+## Profile Generation
+
+On first run in a new project (or when `--profile` is passed), generate a project profile.
+
+### Step 1: Read project docs
+
+Read the project's CLAUDE.md (and README.md if it exists). Extract:
+- Project description and purpose
+- Tech stack (languages, frameworks, key libraries)
+- Architecture (main subsystems and their responsibilities)
+- Test command
+- Editable paths (where source code lives)
+
+### Step 2: Generate profile
+
+Based on what you learned, generate a profile JSON. Think about:
+- What open-source ecosystem is this project part of?
+- What GitHub topics and search queries would find repos with relevant patterns?
+- What keywords indicate high relevance vs low relevance?
+- What question should you ask when triaging a repo for this project?
+
+Write the profile to `~/Engineering/skill-always-hungry/state/profiles/<project-name>.json`:
+
+```json
+{
+  "name": "<project-name>",
+  "path": "<absolute path to project root>",
+  "description": "<1-2 sentence project description>",
+  "search_queries": [
+    "<query 1 — primary domain, stars:>=200 sort:updated>",
+    "<query 2 — key subsystem, stars:>=200 sort:updated>",
+    "<query 3 — tech stack + domain intersection, stars:>=100 sort:updated>"
+  ],
+  "relevance_keywords": {
+    "high": ["<5-8 keywords from project's core subsystems>"],
+    "medium": ["<3-5 keywords from adjacent concerns>"],
+    "low": ["<2-3 broad domain keywords>"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve <project-name>'s <key subsystems>?",
+  "test_command": "<detected from CLAUDE.md>",
+  "target_paths": ["<source directories from CLAUDE.md>"]
+}
+```
+
+### Step 3: Dry-run exit
+
+If `--dry-run` was specified, print the profile and stop:
+
+```
+## Dry Run — Project Profile for <project-name>
+
+Description: <description>
+Search queries:
+  1. <query 1>
+  2. <query 2>
+  3. <query 3>
+
+Relevance keywords:
+  High: <list>
+  Medium: <list>
+  Low: <list>
+
+Triage question: <question>
+Test command: <command>
+Target paths: <paths>
+```
+
+Then stop. Do not proceed to Stage 1.
+
+### Step 4: Profile flag exit
+
+If `--profile` was specified, print "Profile regenerated for <project-name>" and stop.
