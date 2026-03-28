@@ -225,3 +225,89 @@ Write `runs/<project-name>/YYYY-MM-DD/scout-report.json`:
 ```
 
 If `--scout-only`, display the scout report to the user and stop here.
+
+---
+
+## Stage 2: Evaluate
+
+**Goal:** Test each candidate improvement against the target project.
+
+Read the scout report from `runs/<project-name>/YYYY-MM-DD/scout-report.json`.
+
+For each candidate:
+
+### Step 1 — Create evaluation branch
+
+In the target project:
+
+```bash
+cd <project-root>
+git checkout -b always-hungry/eval-YYYY-MM-DD-N
+```
+
+Where N is the candidate index (1, 2, 3...).
+
+### Step 2 — Apply the change
+
+Modify the target project files identified in the candidate's `target` field. Apply the `key_insight` from the candidate.
+
+Rules:
+- Read the existing target files first. Understand their structure.
+- Make surgical, focused changes — don't rewrite entire files.
+- Follow existing code patterns and naming conventions.
+- Only modify files within the profile's `target_paths`.
+- Do not add new dependencies.
+
+### Step 3 — Run tests
+
+Run the test command from the profile:
+
+```bash
+<test_command>
+```
+
+**If tests fail:** revert and skip this candidate:
+```bash
+git checkout main
+git branch -D always-hungry/eval-YYYY-MM-DD-N
+```
+Log as "fail" with reason "tests failed" in eval-results.json. Continue to next candidate.
+
+### Step 4 — Score
+
+Run the `/project-audit` methodology inline against the target project (read `~/.claude/skills/project-audit/SKILL.md` and follow Phases 0–6). Skip user checkpoints — the loop must be autonomous.
+
+**Scoring:**
+- Before applying the candidate, use the baseline audit from the scout phase (or run one if not available)
+- After applying, run a fresh audit
+- Score = (Must Do resolved × 3) + (Should Do resolved × 1)
+- **Pass** if score improves AND tests pass
+- **Fail** otherwise
+
+### Step 5 — Keep or revert
+
+**Pass:**
+1. Commit: `git add -A && git commit -m "always-hungry: <candidate description>"`
+2. Stay on the evaluation branch
+
+**Fail:**
+1. `git checkout main`
+2. `git branch -D always-hungry/eval-YYYY-MM-DD-N`
+
+### Step 6 — Log results
+
+Append to `runs/<project-name>/YYYY-MM-DD/eval-results.json`:
+
+```json
+[
+  {
+    "candidate_index": 1,
+    "source_repo": "owner/repo",
+    "description": "...",
+    "baseline_score": { "overall": <N> },
+    "candidate_score": { "overall": <N> },
+    "verdict": "pass|fail",
+    "diff_summary": "..."
+  }
+]
+```
