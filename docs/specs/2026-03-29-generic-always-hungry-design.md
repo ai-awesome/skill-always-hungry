@@ -215,4 +215,3 @@ The old repo can be archived after migration.
 - Does not track run data or profiles in git (user-private)
 - Does not modify files outside the profile's `target_paths`
 - Does not add new dependencies to the target project
-- Does not tackle changes that require L-sized refactors
