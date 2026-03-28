@@ -134,3 +134,94 @@ Then stop. Do not proceed to Stage 1.
 ### Step 4: Profile flag exit
 
 If `--profile` was specified, print "Profile regenerated for <project-name>" and stop.
+
+---
+
+## Stage 1: Scout
+
+**Goal:** Find repos from the open-source community that contain ideas to improve the target project.
+
+### Step 1 — Load or generate profile
+
+Read `~/Engineering/skill-always-hungry/state/profiles/<project-name>.json`.
+If it doesn't exist, run Profile Generation (see above) first.
+
+### Step 2 — Fetch repos
+
+Use the GitHub MCP `search_repositories` tool with each query from the profile's `search_queries`:
+
+```
+mcp__github__search_repositories(query: "<search_query>", perPage: 20)
+```
+
+Run each query. Deduplicate results by `full_name`.
+
+### Step 3 — Filter
+
+From the combined results:
+- Remove forks (check `fork` field)
+- Remove repos not updated in the last 90 days (check `updated_at` field)
+- Keep at most 20 repos total
+
+### Step 4 — Dedup against state
+
+Read `~/Engineering/skill-always-hungry/state/seen.json`. For each repo, fetch its latest commit SHA:
+
+```
+mcp__github__list_commits(owner: "...", repo: "...", perPage: 1)
+```
+
+Take the SHA from the first (most recent) commit. Skip any repo where the SHA matches what's in seen.json (no new commits since last scan).
+
+### Step 5 — Triage
+
+For each new/updated repo, fetch its key files using GitHub MCP tools:
+
+```
+mcp__github__get_file_contents(owner: "...", repo: "...", path: "")
+mcp__github__get_file_contents(owner: "...", repo: "...", path: "README.md")
+```
+
+Also look for architecture docs, config files, and source code relevant to the profile's domain.
+
+For each repo, answer the profile's `triage_question`. Rank relevance using the profile's `relevance_keywords` (high → medium → low).
+
+### Step 6 — Extract candidates
+
+For repos that pass triage, produce improvement candidates. Each candidate:
+
+```json
+{
+  "source_repo": "owner/repo",
+  "source_url": "https://github.com/owner/repo",
+  "category": "<detected from project domain>",
+  "description": "What the improvement is",
+  "target": ["<files in the target project to modify>"],
+  "rationale": "Why this would improve the target project",
+  "key_insight": "The specific technique or pattern to adopt"
+}
+```
+
+Extract at most **5 candidates** total across all repos. Prioritize by expected impact.
+
+### Step 7 — Write scout report
+
+Create the run directory:
+
+```bash
+mkdir -p ~/Engineering/skill-always-hungry/runs/<project-name>/$(date +%Y-%m-%d)
+```
+
+Write `runs/<project-name>/YYYY-MM-DD/scout-report.json`:
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "project": "<project-name>",
+  "repos_scanned": <N>,
+  "repos_with_new_content": <N>,
+  "candidates": [ ...candidate objects... ]
+}
+```
+
+If `--scout-only`, display the scout report to the user and stop here.
