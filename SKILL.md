@@ -311,3 +311,94 @@ Append to `runs/<project-name>/YYYY-MM-DD/eval-results.json`:
   }
 ]
 ```
+
+---
+
+## Stage 3: Apply
+
+**Goal:** Land passing candidates in the target project permanently.
+
+For each candidate that passed evaluation:
+
+### Step 1 — Merge to main
+
+```bash
+cd <project-root>
+git checkout main
+git merge always-hungry/eval-YYYY-MM-DD-N --no-ff -m "always-hungry: <description>
+
+Source: <source_url>
+Score: <baseline_overall> → <candidate_overall>"
+```
+
+### Step 2 — Cleanup branch
+
+```bash
+git branch -d always-hungry/eval-YYYY-MM-DD-N
+```
+
+### Step 3 — Update state
+
+In the skill repo, update `~/Engineering/skill-always-hungry/state/seen.json` with the latest commit SHA for every repo that was scanned in this run (not just ones that produced candidates).
+
+Read current seen.json, merge in new entries, write back.
+
+### Step 4 — Write run summary
+
+Create `runs/<project-name>/YYYY-MM-DD/summary.md`:
+
+```markdown
+# Scouting Run YYYY-MM-DD — <project-name>
+
+## Stats
+- Repos scanned: <n>
+- Repos with new content: <n>
+- Candidates found: <n>
+- Candidates passed: <n>
+- Candidates applied: <n>
+
+## Applied
+
+### <description>
+- Source: <source_url>
+- Score: <baseline> → <candidate>
+- Files changed: <list>
+- Key insight: <what was learned>
+
+## Failed
+
+### <description>
+- Source: <source_url>
+- Reason: <why it failed>
+
+## Skipped Repos
+<list repos scanned but no candidates, with brief reason>
+```
+
+### Step 5 — Commit state
+
+```bash
+cd ~/Engineering/skill-always-hungry
+git add state/seen.json
+git commit -m "run: <project-name> YYYY-MM-DD — <n> applied, <n> failed"
+git push origin main
+```
+
+### Step 6 — Display summary
+
+Print the summary to the user.
+
+### Step 7 — Push target
+
+Push the target project to its remote:
+
+```bash
+cd <project-root>
+git push origin main
+```
+
+### Show Last Run
+
+If `--show-last-run` was specified, find the most recent directory in
+`runs/<project-name>/` and display its `summary.md`. If no summary exists, show
+`scout-report.json` instead. Then stop.
