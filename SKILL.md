@@ -18,12 +18,18 @@ Works on any project — trading systems, web apps, CLI tools, plugins, anything
 
 ## Paths
 
+Resolve the skill repo location dynamically:
+
+```bash
+SKILL_ROOT=$(readlink ~/.claude/skills/always-hungry || echo ~/.claude/skills/always-hungry)
+```
+
 | Item | Path |
 |---|---|
-| Skill repo | ~/Engineering/skill-always-hungry |
-| State file | ~/Engineering/skill-always-hungry/state/seen.json |
-| Profiles | ~/Engineering/skill-always-hungry/state/profiles/ |
-| Run logs | ~/Engineering/skill-always-hungry/runs/ |
+| Skill repo | `$SKILL_ROOT` |
+| State file | `$SKILL_ROOT/state/seen.json` |
+| Profiles | `$SKILL_ROOT/state/profiles/` |
+| Run logs | `$SKILL_ROOT/runs/` |
 
 ## GitHub MCP
 
@@ -83,7 +89,7 @@ Based on what you learned, generate a profile JSON. Think about:
 - What keywords indicate high relevance vs low relevance?
 - What question should you ask when triaging a repo for this project?
 
-Write the profile to `~/Engineering/skill-always-hungry/state/profiles/<project-name>.json`:
+Write the profile to `$SKILL_ROOT/state/profiles/<project-name>.json`:
 
 ```json
 {
@@ -143,7 +149,7 @@ If `--profile` was specified, print "Profile regenerated for <project-name>" and
 
 ### Step 1 — Load or generate profile
 
-Read `~/Engineering/skill-always-hungry/state/profiles/<project-name>.json`.
+Read `$SKILL_ROOT/state/profiles/<project-name>.json`.
 If it doesn't exist, run Profile Generation (see above) first.
 
 ### Step 2 — Fetch repos
@@ -165,7 +171,7 @@ From the combined results:
 
 ### Step 4 — Dedup against state
 
-Read `~/Engineering/skill-always-hungry/state/seen.json`. For each repo, fetch its latest commit SHA:
+Read `$SKILL_ROOT/state/seen.json`. For each repo, fetch its latest commit SHA:
 
 ```
 mcp__github__list_commits(owner: "...", repo: "...", perPage: 1)
@@ -209,7 +215,7 @@ Extract at most **5 candidates** total across all repos. Prioritize by expected 
 Create the run directory:
 
 ```bash
-mkdir -p ~/Engineering/skill-always-hungry/runs/<project-name>/$(date +%Y-%m-%d)
+mkdir -p $SKILL_ROOT/runs/<project-name>/$(date +%Y-%m-%d)
 ```
 
 Write `runs/<project-name>/YYYY-MM-DD/scout-report.json`:
@@ -344,7 +350,7 @@ git branch -d always-hungry/eval-YYYY-MM-DD-N
 
 ### Step 3 — Update state
 
-In the skill repo, update `~/Engineering/skill-always-hungry/state/seen.json` with the latest commit SHA for every repo that was scanned in this run (not just ones that produced candidates).
+In the skill repo, update `$SKILL_ROOT/state/seen.json` with the latest commit SHA for every repo that was scanned in this run (not just ones that produced candidates).
 
 Read current seen.json, merge in new entries, write back.
 
@@ -383,7 +389,7 @@ Create `runs/<project-name>/YYYY-MM-DD/summary.md`:
 ### Step 5 — Commit state
 
 ```bash
-cd ~/Engineering/skill-always-hungry
+cd $SKILL_ROOT
 git add state/seen.json
 git commit -m "run: <project-name> YYYY-MM-DD — <n> applied, <n> failed"
 git push origin main
