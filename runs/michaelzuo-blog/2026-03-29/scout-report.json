@@ -1,0 +1,35 @@
+{
+  "date": "2026-03-29",
+  "project": "michaelzuo-blog",
+  "repos_scanned": 12,
+  "repos_with_new_content": 5,
+  "candidates": [
+    {
+      "source_repo": "leerob/next-mdx-blog",
+      "source_url": "https://github.com/leerob/next-mdx-blog",
+      "category": "SEO",
+      "description": "Add JSON-LD Article structured data to blog posts",
+      "target": ["src/app/post/[slug]/page.tsx"],
+      "rationale": "Blog posts lack structured data, reducing search engine visibility. JSON-LD Article schema helps Google understand post metadata (author, date, description) and can enable rich snippets in search results.",
+      "key_insight": "Inject a <script type='application/ld+json'> tag with BlogPosting schema into each blog post page, using existing post metadata (title, date, spoiler, author from site.config)."
+    },
+    {
+      "source_repo": "leerob/next-mdx-blog",
+      "source_url": "https://github.com/leerob/next-mdx-blog",
+      "category": "architecture",
+      "description": "Replace postbuild sitemap script with native Next.js app/sitemap.ts",
+      "target": ["src/app/sitemap.ts", "scripts/generate-sitemap.mjs", "package.json"],
+      "rationale": "Using Next.js built-in sitemap generation is cleaner than a postbuild script. It's type-safe, automatically included in the build, and works with static export.",
+      "key_insight": "Next.js supports a sitemap() function in app/sitemap.ts that generates sitemap.xml at build time, even with output: 'export'. Replaces scripts/generate-sitemap.mjs."
+    },
+    {
+      "source_repo": "nelsonlaidev/nelsonlai.dev",
+      "source_url": "https://github.com/nelsonlaidev/nelsonlai.dev",
+      "category": "SEO",
+      "description": "Add robots.ts for proper robots.txt generation",
+      "target": ["src/app/robots.ts"],
+      "rationale": "No robots.txt exists currently. A proper robots.txt tells crawlers where the sitemap is and which paths to index, improving crawl efficiency.",
+      "key_insight": "Next.js supports a robots() function in app/robots.ts that generates robots.txt at build time. Points crawlers to sitemap URL."
+    }
+  ]
+}

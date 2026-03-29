@@ -1,0 +1,18 @@
+{
+  "name": "Mikedown",
+  "path": "/Users/michaelzuo/Engineering/AIDreamWorks/Mikedown",
+  "description": "Tauri v2 + React 18 desktop Markdown editor with CodeMirror 6, multi-tab support, vim/emacs keybindings, and marked-based rendering with highlight.js.",
+  "search_queries": [
+    "tauri markdown editor stars:>=100 sort:updated",
+    "codemirror markdown desktop editor stars:>=200 sort:updated",
+    "markdown editor react tauri stars:>=50 sort:updated"
+  ],
+  "relevance_keywords": {
+    "high": ["tauri", "codemirror", "markdown editor", "marked", "highlight.js", "desktop editor", "zustand"],
+    "medium": ["markdown preview", "code highlighting", "vim keybinding", "tab management", "dark theme"],
+    "low": ["markdown", "editor", "react desktop"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve Mikedown's markdown rendering, editor experience, tab management, or Tauri integration?",
+  "test_command": "pnpm test",
+  "target_paths": ["src/"]
+}

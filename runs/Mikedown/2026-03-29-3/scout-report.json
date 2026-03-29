@@ -1,0 +1,29 @@
+{
+  "date": "2026-03-29",
+  "run": 3,
+  "project": "Mikedown",
+  "repos_scanned": 23,
+  "repos_with_new_content": 23,
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "source_repo": "kyleyoungblom/sidebar-notes",
+      "source_url": "https://github.com/kyleyoungblom/sidebar-notes",
+      "category": "editor-ux",
+      "description": "Image paste from clipboard: save pasted images as files alongside the markdown document and insert markdown image link",
+      "target": ["src/components/Editor.tsx", "src-tauri/capabilities/default.json"],
+      "rationale": "Pasting images is one of the most requested features in markdown editors. Currently Mikedown ignores image paste. With Tauri's writeFile API, images can be saved to an assets directory next to the file and referenced with relative paths.",
+      "key_insight": "In the CodeMirror paste handler, check for image/* clipboard items. Read as ArrayBuffer, write to disk via Tauri writeFile to a sibling directory. Insert ![](relative-path) at cursor. Needs fs:allow-write-file capability."
+    },
+    {
+      "candidate_index": 2,
+      "source_repo": "multiple/codemirror-standard",
+      "source_url": "https://codemirror.net/docs/ref/",
+      "category": "editor-quality",
+      "description": "Enhanced editor comfort: add bracket matching, auto-close brackets/quotes, indent-on-input, and highlight selection matches from already-installed CM6 packages",
+      "target": ["src/components/Editor.tsx"],
+      "rationale": "Mikedown's editor is missing standard comfort features that every modern code editor has. bracketMatching, closeBrackets, indentOnInput, and highlightSelectionMatches are all available as transitive deps but unused.",
+      "key_insight": "Import bracketMatching and indentOnInput from @codemirror/language, closeBrackets from @codemirror/autocomplete, highlightSelectionMatches from @codemirror/search. Add to the extensions array — zero new deps needed."
+    }
+  ]
+}

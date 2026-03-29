@@ -1,0 +1,20 @@
+{
+  "name": "AutoTrader",
+  "path": "/Users/michaelzuo/Engineering/AIDreamWorks/AutoTrader",
+  "description": "Autonomous dual-mode moving average trading agent with Claude LLM integration and Tiger Brokers API execution, featuring a 6-state FSM for reversion/trend strategies.",
+  "github_topics": ["algorithmic-trading", "trading-bot", "quantitative-finance"],
+  "awesome_lists": ["wilsonfreitas/awesome-quant"],
+  "search_queries": [
+    "algorithmic trading python fastapi stars:>=200 sort:stars",
+    "moving average trading bot risk management stars:>=100 sort:stars",
+    "stock trading state machine python stars:>=50 sort:stars"
+  ],
+  "relevance_keywords": {
+    "high": ["moving-average", "state-machine", "risk-management", "position-sizing", "stop-loss", "trailing-stop", "ATR", "backtesting"],
+    "medium": ["market-data", "order-execution", "portfolio-management", "signal-scoring", "drawdown"],
+    "low": ["trading", "finance", "stock-market"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve AutoTrader's risk management, position sizing, market data handling, state machine logic, or execution quality?",
+  "test_command": "source venv/bin/activate && python3 -m pytest trader/tests/ --ignore=trader/tests/e2e_test.py -q",
+  "target_paths": ["trader/"]
+}

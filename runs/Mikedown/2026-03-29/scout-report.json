@@ -1,0 +1,58 @@
+{
+  "date": "2026-03-29",
+  "project": "Mikedown",
+  "repos_scanned": 9,
+  "repos_with_new_content": 9,
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "source_repo": "Bokuchi-Editor/bokuchi",
+      "source_url": "https://github.com/Bokuchi-Editor/bokuchi",
+      "category": "editor-ux",
+      "description": "Table paste conversion: auto-convert HTML tables and TSV/CSV clipboard data into Markdown tables when pasting in editor mode",
+      "target": ["src/components/Editor.tsx"],
+      "rationale": "Mikedown's paste handler only loads raw text. Users frequently copy tables from spreadsheets and web pages — converting to Markdown tables on paste is a significant usability improvement.",
+      "key_insight": "Detect text/html with <table> tags in clipboard, parse via DOMParser, and convert cells to pipe-delimited Markdown. Also detect tab/comma-separated text and convert to Markdown tables."
+    },
+    {
+      "candidate_index": 2,
+      "source_repo": "Bokuchi-Editor/bokuchi",
+      "source_url": "https://github.com/Bokuchi-Editor/bokuchi",
+      "category": "editor-ux",
+      "description": "Interactive checkboxes: make task list checkboxes clickable in the preview pane, toggling the corresponding markdown source",
+      "target": ["src/components/MarkdownRenderer.tsx", "src/store/appStore.ts"],
+      "rationale": "Mikedown renders GFM task lists but checkboxes are static. Making them interactive (click to toggle [x]/[ ]) improves the editing experience for TODO-style documents.",
+      "key_insight": "Add click handler on input[type=checkbox] in the rendered HTML. Find the Nth checkbox in the markdown source and toggle its state, then update the store."
+    },
+    {
+      "candidate_index": 3,
+      "source_repo": "Bokuchi-Editor/bokuchi",
+      "source_url": "https://github.com/Bokuchi-Editor/bokuchi",
+      "category": "data-safety",
+      "description": "Auto-save to file: automatically save dirty files to disk after a debounce period, preventing data loss",
+      "target": ["src/store/appStore.ts", "src/lib/fileOps.ts"],
+      "rationale": "Mikedown only auto-saves drafts to localStorage. For files with a known path, auto-saving to disk after 3s of inactivity prevents data loss from crashes or accidental closes.",
+      "key_insight": "When a tab has a filePath and is dirty, debounce-write the content to disk using Tauri's writeTextFile. Show a brief 'saved' indicator. Skip for untitled/new tabs."
+    },
+    {
+      "candidate_index": 4,
+      "source_repo": "Bokuchi-Editor/bokuchi",
+      "source_url": "https://github.com/Bokuchi-Editor/bokuchi",
+      "category": "session-management",
+      "description": "Session tab persistence: save and restore all open tabs across app restarts",
+      "target": ["src/store/appStore.ts"],
+      "rationale": "Mikedown only restores a single draft. Saving the full tab state (file paths, active tab) to localStorage and restoring on launch gives a seamless restart experience.",
+      "key_insight": "On tab changes, persist tab metadata (filePaths, activeTabId) to localStorage. On mount, reload files from those paths. Don't persist content — re-read from disk for freshness."
+    },
+    {
+      "candidate_index": 5,
+      "source_repo": "Bokuchi-Editor/bokuchi",
+      "source_url": "https://github.com/Bokuchi-Editor/bokuchi",
+      "category": "navigation",
+      "description": "Document outline: extract headings from markdown and display a navigable table of contents in the sidebar",
+      "target": ["src/components/Sidebar.tsx", "src/lib/markdown.ts"],
+      "rationale": "For long documents, a heading outline provides quick navigation. Mikedown already has a sidebar but no outline view. Headings can be extracted during markdown parsing.",
+      "key_insight": "Parse ATX headings (# to ######) while skipping code blocks. Display as an indented list in the sidebar. Click to scroll to the heading's rendered element by ID."
+    }
+  ]
+}

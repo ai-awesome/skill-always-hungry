@@ -1,0 +1,39 @@
+{
+  "date": "2026-03-29",
+  "run": 2,
+  "project": "Mikedown",
+  "repos_scanned": 25,
+  "repos_with_new_content": 16,
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "source_repo": "blueberrycongee/Lumina-Note",
+      "source_url": "https://github.com/blueberrycongee/Lumina-Note",
+      "category": "markdown-rendering",
+      "description": "GitHub-style callout/admonition blocks: render > [!NOTE], > [!WARNING], > [!TIP] etc. with colored styling and icons",
+      "target": ["src/lib/markdown.ts", "src/index.css"],
+      "rationale": "Callout blocks are a GitHub Markdown standard. Mikedown renders them as plain blockquotes. Adding colored callout rendering makes documents more expressive and matches user expectations from GitHub/Obsidian.",
+      "key_insight": "Parse blockquotes starting with [!TYPE] via a marked extension or post-processing. Wrap in .callout .callout-{type} divs. Style with CSS using colored left borders and background tints per type (note=blue, warning=yellow, tip=green, danger=red)."
+    },
+    {
+      "candidate_index": 2,
+      "source_repo": "unvalley/ephe",
+      "source_url": "https://github.com/unvalley/ephe",
+      "category": "editor-ux",
+      "description": "Clickable URLs in editor: Cmd/Ctrl+Click on URLs in CodeMirror to open in browser, with underline decoration and hover tooltip",
+      "target": ["src/components/Editor.tsx"],
+      "rationale": "When editing markdown, clicking URLs requires switching to preview mode. Adding Cmd+Click to open URLs directly from the editor saves context switches. The underline decoration also improves link visibility in source view.",
+      "key_insight": "Create a CodeMirror ViewPlugin that decorates URLs and markdown links with underlines. On mousedown with modifier key, find the URL at cursor position and window.open() it. Add hoverTooltip showing 'Cmd+Click to open link'."
+    },
+    {
+      "candidate_index": 3,
+      "source_repo": "blueberrycongee/Lumina-Note",
+      "source_url": "https://github.com/blueberrycongee/Lumina-Note",
+      "category": "editor-ux",
+      "description": "Synchronized editor-preview scrolling: scroll the preview pane proportionally when the editor scrolls in split mode",
+      "target": ["src/components/Editor.tsx", "src/App.tsx"],
+      "rationale": "In split mode (editor left, preview right), the editor and preview scroll independently. Synchronizing them so the preview tracks the editor position is a core expectation of markdown editors.",
+      "key_insight": "Add a scroll event listener on CodeMirror's scroller element. Compute scroll percentage (scrollTop / scrollable height). Apply the same percentage to the preview's content-wrap element. Debounce with requestAnimationFrame to prevent loops."
+    }
+  ]
+}

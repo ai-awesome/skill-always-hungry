@@ -1,0 +1,53 @@
+{
+  "date": "2026-03-29",
+  "project": "AutoTrader",
+  "repos_scanned": 15,
+  "repos_with_new_content": 8,
+  "candidates": [
+    {
+      "source_repo": "ranaroussi/quantstats",
+      "source_url": "https://github.com/ranaroussi/quantstats",
+      "category": "risk-management",
+      "description": "Add Monte Carlo drawdown simulation to risk metrics",
+      "target": ["trader/risk_metrics.py"],
+      "rationale": "AutoTrader tracks Sharpe/Calmar/volatility but lacks probabilistic risk assessment. Monte Carlo simulation on daily returns can estimate probability of ruin and worst-case drawdown scenarios, enabling better position sizing decisions.",
+      "key_insight": "Run N simulations of daily return shuffles to compute bust probability (hitting max drawdown threshold) and goal probability (hitting target return). Output p5/p50/p95 drawdown percentiles."
+    },
+    {
+      "source_repo": "ranaroussi/quantstats",
+      "source_url": "https://github.com/ranaroussi/quantstats",
+      "category": "risk-management",
+      "description": "Add Value at Risk (VaR) and Conditional VaR metrics",
+      "target": ["trader/risk_metrics.py"],
+      "rationale": "VaR and CVaR (Expected Shortfall) are standard institutional risk metrics that quantify tail risk. AutoTrader's risk_metrics.py currently computes rolling volatility but not tail-risk measures, leaving a blind spot for extreme loss scenarios.",
+      "key_insight": "Compute parametric VaR at 95%/99% confidence from daily P&L series using normal distribution assumption, and CVaR as the mean of returns beyond VaR threshold. Both are single-number risk summaries for the EOD review."
+    },
+    {
+      "source_repo": "brndnmtthws/thetagang",
+      "source_url": "https://github.com/brndnmtthws/thetagang",
+      "category": "market-regime",
+      "description": "Add choppiness index to market regime detection",
+      "target": ["trader/market_regime.py"],
+      "rationale": "AutoTrader's market_regime.py uses ADX + VIX for regime detection. Thetagang adds a choppiness index (ATR-sum / range over lookback) and directional efficiency ratio to distinguish trending vs mean-reverting conditions. This can improve entry timing by avoiding trades in choppy markets.",
+      "key_insight": "Choppiness index = 100 * log(sum_ATR_N / (highest_high - lowest_low)) / log(N). Values >61.8 indicate choppy/ranging, <38.2 indicate trending. Combine with existing ADX for a dual-confirmation regime filter."
+    },
+    {
+      "source_repo": "ranaroussi/quantstats",
+      "source_url": "https://github.com/ranaroussi/quantstats",
+      "category": "position-sizing",
+      "description": "Add Kelly criterion for optimal position sizing validation",
+      "target": ["trader/position_sizing.py"],
+      "rationale": "AutoTrader uses ATR-based volatility sizing but has no theoretical optimality check. Kelly criterion provides the mathematically optimal fraction of capital to risk per trade based on win rate and payoff ratio. Using half-Kelly as a ceiling on position size adds a safety bound.",
+      "key_insight": "Kelly fraction = win_rate - (1 - win_rate) / payoff_ratio. Use half-Kelly as a maximum position size cap alongside the existing ATR-based sizing. Derive win_rate and payoff_ratio from the trade log."
+    },
+    {
+      "source_repo": "brndnmtthws/thetagang",
+      "source_url": "https://github.com/brndnmtthws/thetagang",
+      "category": "execution",
+      "description": "Add configurable post-open delay and pre-close cutoff",
+      "target": ["trader/config.py", "trader/agent.py"],
+      "rationale": "AutoTrader has a fixed 09:30-10:00 blackout. Thetagang implements configurable delay_after_open and delay_before_close parameters with exchange-hours gating. Making this configurable allows tuning based on observed slippage patterns during market open/close volatility.",
+      "key_insight": "Add DELAY_AFTER_OPEN_MINUTES and CUTOFF_BEFORE_CLOSE_MINUTES config params. Gate the cycle entry in agent.py to skip execution during these windows. This generalizes the existing hardcoded blackout."
+    }
+  ]
+}

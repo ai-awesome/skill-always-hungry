@@ -1,0 +1,18 @@
+{
+  "name": "michaelzuo-blog",
+  "path": "/Users/michaelzuo/Engineering/AIDreamWorks/michaelzuo-blog",
+  "description": "Personal blog on michaelzuo.vip — bilingual (EN/ZH) static site with dark mode, SVG diagrams, built with Next.js 15 + Tailwind CSS 4, deployed to GitHub Pages via GitHub Actions.",
+  "search_queries": [
+    "nextjs blog static export markdown stars:>=200 sort:updated",
+    "nextjs blog tailwind dark mode bilingual stars:>=100 sort:updated",
+    "static blog markdown remark typography stars:>=200 sort:updated"
+  ],
+  "relevance_keywords": {
+    "high": ["nextjs", "static-export", "markdown-blog", "bilingual", "tailwind-typography", "dark-mode", "github-pages"],
+    "medium": ["remark", "gray-matter", "ssg", "i18n-blog", "svg-diagrams"],
+    "low": ["blog", "personal-site", "static-site"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve michaelzuo-blog's content rendering, bilingual support, performance, SEO, or design?",
+  "test_command": "npm run build",
+  "target_paths": ["src/", "content/"]
+}

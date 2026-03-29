@@ -1,0 +1,23 @@
+[
+  {
+    "candidate_index": 1,
+    "source_repo": "freqtrade/freqtrade",
+    "description": "Per-symbol stoploss cooldown to prevent revenge trading",
+    "verdict": "pass",
+    "diff_summary": "trader/risk.py: +32 lines — _cooldown_for_entry() method applies 2x cooldown after stop-loss exits"
+  },
+  {
+    "candidate_index": 2,
+    "source_repo": "freqtrade/freqtrade",
+    "description": "Consecutive stoploss guard — halt entries after rapid stop-loss exits",
+    "verdict": "pass",
+    "diff_summary": "trader/risk.py: +65 lines — _check_consecutive_stoploss_guard() blocks BUYs after 3+ stop-losses in 2h"
+  },
+  {
+    "candidate_index": 3,
+    "source_repo": "edtechre/pybroker",
+    "description": "MAE/MFE tracking per trade for stop calibration",
+    "verdict": "pass",
+    "diff_summary": "trader/position_manager.py: +44 lines (LWM tracking, get_mae_mfe()), trader/trade_log.py: +2 lines (mae/mfe fields)"
+  }
+]
