@@ -171,26 +171,21 @@ From the combined results:
 
 ### Step 4 — Dedup against state
 
-Read `$SKILL_ROOT/state/seen.json`. For each repo, fetch its latest commit SHA:
+Read `$SKILL_ROOT/state/seen.json`. For each repo, compare its `updated_at` field from the search results against the timestamp stored in seen.json. Skip any repo where `updated_at` hasn't changed since the last scan.
 
-```
-mcp__github__list_commits(owner: "...", repo: "...", perPage: 1)
-```
-
-Take the SHA from the first (most recent) commit. Skip any repo where the SHA matches what's in seen.json (no new commits since last scan).
+No additional API calls needed — `updated_at` is already in the search results.
 
 ### Step 5 — Triage
 
-For each new/updated repo, fetch its key files using GitHub MCP tools:
+For each new/updated repo, fetch only its README:
 
 ```
-mcp__github__get_file_contents(owner: "...", repo: "...", path: "")
 mcp__github__get_file_contents(owner: "...", repo: "...", path: "README.md")
 ```
 
-Also look for architecture docs, config files, and source code relevant to the profile's domain.
+Use the README plus the repo's description and topics from the search results to answer the profile's `triage_question`. Rank relevance using the profile's `relevance_keywords` (high → medium → low).
 
-For each repo, answer the profile's `triage_question`. Rank relevance using the profile's `relevance_keywords` (high → medium → low).
+Do NOT fetch additional files at this stage — deeper reading happens only in Stage 2 for candidates that pass triage.
 
 ### Step 6 — Extract candidates
 
@@ -240,87 +235,74 @@ If `--scout-only`, display the scout report to the user and stop here.
 
 Read the scout report from `runs/<project-name>/YYYY-MM-DD/scout-report.json`.
 
-For each candidate:
+### Step 1 — Baseline audit
 
-### Step 1 — Create evaluation branch
-
-In the target project:
-
-```bash
-cd <project-root>
-git checkout -b always-hungry/eval-YYYY-MM-DD-N
-```
-
-Where N is the candidate index (1, 2, 3...).
-
-### Step 2 — Apply the change
-
-Modify the target project files identified in the candidate's `target` field. Apply the `key_insight` from the candidate.
-
-Rules:
-- Read the existing target files first. Understand their structure.
-- Make surgical, focused changes — don't rewrite entire files.
-- Follow existing code patterns and naming conventions.
-- Only modify files within the profile's `target_paths`.
-- Do not add new dependencies.
-
-### Step 3 — Run tests
-
-Run the test command from the profile:
-
-```bash
-<test_command>
-```
-
-**If tests fail:** revert and skip this candidate:
-```bash
-git checkout main
-git branch -D always-hungry/eval-YYYY-MM-DD-N
-```
-Log as "fail" with reason "tests failed" in eval-results.json. Continue to next candidate.
-
-### Step 4 — Score
-
-Fetch the project-audit methodology from GitHub:
+Run one audit before applying any candidates. Fetch the audit methodology:
 
 ```
 mcp__github__get_file_contents(owner: "ai-awesome", repo: "skill-audit-project", path: "SKILL.md")
 ```
 
-Run the audit methodology inline against the target project (follow Phases 0–6). Skip user checkpoints — the loop must be autonomous.
+Run Phases 0–6 inline against the target project. Skip user checkpoints — the loop must be autonomous. Save the baseline result (overall score, Must Do count, Should Do count).
 
-- Before applying the candidate, use the baseline audit from the scout phase (or run one if not available)
-- After applying, run a fresh audit
-- Score = (Must Do resolved × 3) + (Should Do resolved × 1)
-- **Pass** if score improves AND tests pass
-- **Fail** otherwise
+### Step 2 — Apply and test each candidate
 
-### Step 5 — Keep or revert
+For each candidate:
 
-**Pass:**
-1. Commit: `git add -A && git commit -m "always-hungry: <candidate description>"`
-2. Stay on the evaluation branch
+1. **Branch:**
+   ```bash
+   cd <project-root>
+   git checkout -b always-hungry/eval-YYYY-MM-DD-N
+   ```
 
-**Fail:**
-1. `git checkout main`
-2. `git branch -D always-hungry/eval-YYYY-MM-DD-N`
+2. **Apply:** Modify target files with the candidate's `key_insight`.
+   - Read the existing target files first. Understand their structure.
+   - Make surgical, focused changes — don't rewrite entire files.
+   - Follow existing code patterns and naming conventions.
+   - Only modify files within the profile's `target_paths`.
+   - Do not add new dependencies.
 
-### Step 6 — Log results
+3. **Test:** Run `<test_command>` from the profile.
+   - **If tests fail:** revert and skip:
+     ```bash
+     git checkout main
+     git branch -D always-hungry/eval-YYYY-MM-DD-N
+     ```
+     Log as "fail" with reason "tests failed". Continue to next candidate.
 
-Append to `runs/<project-name>/YYYY-MM-DD/eval-results.json`:
+   - **If tests pass:** commit and keep:
+     ```bash
+     git add -A && git commit -m "always-hungry: <candidate description>"
+     ```
+
+### Step 3 — Final audit and scoring
+
+After all candidates have been applied (or failed), run one final audit using the same methodology from Step 1.
+
+Score = (Must Do resolved × 3) + (Should Do resolved × 1)
+
+Compare baseline vs final:
+- If score improved → all passing candidates are **accepted**
+- If score worsened or unchanged → revert all candidates (reset to main)
+
+### Step 4 — Log results
+
+Write `runs/<project-name>/YYYY-MM-DD/eval-results.json`:
 
 ```json
-[
-  {
-    "candidate_index": 1,
-    "source_repo": "owner/repo",
-    "description": "...",
-    "baseline_score": { "overall": <N> },
-    "candidate_score": { "overall": <N> },
-    "verdict": "pass|fail",
-    "diff_summary": "..."
-  }
-]
+{
+  "baseline_score": { "overall": <N>, "must_do": <N>, "should_do": <N> },
+  "final_score": { "overall": <N>, "must_do": <N>, "should_do": <N> },
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "source_repo": "owner/repo",
+      "description": "...",
+      "verdict": "pass|fail",
+      "reason": "..."
+    }
+  ]
+}
 ```
 
 ---
@@ -333,16 +315,17 @@ For each candidate that passed evaluation:
 
 ### Step 1 — Merge to main
 
+For each passing candidate branch:
+
 ```bash
 cd <project-root>
 git checkout main
 git merge always-hungry/eval-YYYY-MM-DD-N --no-ff -m "always-hungry: <description>
 
-Source: <source_url>
-Score: <baseline_overall> → <candidate_overall>"
+Source: <source_url>"
 ```
 
-### Step 2 — Cleanup branch
+### Step 2 — Cleanup branches
 
 ```bash
 git branch -d always-hungry/eval-YYYY-MM-DD-N
@@ -350,7 +333,7 @@ git branch -d always-hungry/eval-YYYY-MM-DD-N
 
 ### Step 3 — Update state
 
-In the skill repo, update `$SKILL_ROOT/state/seen.json` with the latest commit SHA for every repo that was scanned in this run (not just ones that produced candidates).
+In the skill repo, update `$SKILL_ROOT/state/seen.json` with the `updated_at` timestamp for every repo that was scanned in this run (not just ones that produced candidates).
 
 Read current seen.json, merge in new entries, write back.
 
@@ -368,11 +351,14 @@ Create `runs/<project-name>/YYYY-MM-DD/summary.md`:
 - Candidates passed: <n>
 - Candidates applied: <n>
 
+## Audit Score
+- Baseline: <baseline_overall>
+- Final: <final_overall>
+
 ## Applied
 
 ### <description>
 - Source: <source_url>
-- Score: <baseline> → <candidate>
 - Files changed: <list>
 - Key insight: <what was learned>
 
