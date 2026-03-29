@@ -308,7 +308,15 @@ Score = (Must Do resolved × 3) + (Should Do resolved × 1)
 
 Compare baseline vs final:
 - If score improved → all passing candidates are **accepted**
-- If score worsened or unchanged → revert all candidates (reset to main)
+- If score worsened or unchanged → **bisect** to find the bad candidate(s):
+  1. Revert candidates one at a time (most recent first)
+  2. After each revert, re-run tests (not the full audit — just `<test_command>`)
+  3. Once tests still pass after a revert, run a final audit
+  4. If score now improves vs baseline → accept remaining candidates, reject the reverted ones
+  5. If score still hasn't improved → continue reverting and repeat
+  6. If all candidates are reverted → none accepted
+
+This costs extra test runs on regression but avoids discarding good candidates because of one bad one.
 
 ### Step 4 — Log results
 
@@ -323,7 +331,7 @@ Write `runs/<project-name>/YYYY-MM-DD/eval-results.json`:
       "candidate_index": 1,
       "source_repo": "owner/repo",
       "description": "...",
-      "verdict": "pass|fail",
+      "verdict": "pass|fail|reverted",
       "reason": "..."
     }
   ]
