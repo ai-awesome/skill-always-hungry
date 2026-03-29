@@ -1,0 +1,53 @@
+{
+  "date": "2026-03-29",
+  "project": "AI-Coding-Observability",
+  "repos_scanned": 18,
+  "repos_with_new_content": 10,
+  "candidates": [
+    {
+      "source_repo": "muety/wakapi",
+      "source_url": "https://github.com/muety/wakapi",
+      "category": "analytics",
+      "description": "Add streak tracking (current and longest consecutive coding days)",
+      "target": ["src/claude_analytics/efficiency.py", "src/claude_analytics/reporter.py"],
+      "rationale": "Wakapi prominently displays current streak and longest streak as key engagement metrics. AI-Coding-Observability tracks daily sessions but doesn't compute streaks — a highly motivating metric for engineers.",
+      "key_insight": "Compute consecutive-day streaks from session dates. Add current_streak_days and longest_streak_days to EfficiencyMetrics and display in the terminal report."
+    },
+    {
+      "source_repo": "satomic/copilot-usage-advanced-dashboard",
+      "source_url": "https://github.com/satomic/copilot-usage-advanced-dashboard",
+      "category": "analytics",
+      "description": "Add engagement tier scoring with color-coded levels",
+      "target": ["src/claude_analytics/insights.py", "src/claude_analytics/reporter.py"],
+      "rationale": "Copilot dashboard uses a 5-tier adoption scoring system (0-40% red through 95-100% blue) to categorize user engagement. The project already computes efficiency_score but doesn't map it to named tiers.",
+      "key_insight": "Map efficiency_score to named engagement tiers with ANSI colors: Needs Attention (0-0.3), Developing (0.3-0.5), Productive (0.5-0.7), Strong (0.7-0.9), Power User (0.9-1.0)."
+    },
+    {
+      "source_repo": "yihong0618/GitHubPoster",
+      "source_url": "https://github.com/yihong0618/GitHubPoster",
+      "category": "visualization",
+      "description": "Add ASCII contribution heatmap to terminal report",
+      "target": ["src/claude_analytics/reporter.py"],
+      "rationale": "GitHubPoster generates GitHub-style contribution heatmaps from various data sources. An ASCII version in the terminal report would give engineers an immediate visual of their AI usage patterns across days.",
+      "key_insight": "Render a compact 7-row (Mon-Sun) x N-week ASCII heatmap using Unicode block characters at varying intensities, showing daily active time."
+    },
+    {
+      "source_repo": "microsoft/copilot-metrics-dashboard",
+      "source_url": "https://github.com/microsoft/copilot-metrics-dashboard",
+      "category": "analytics",
+      "description": "Add week-over-week trend indicators to report",
+      "target": ["src/claude_analytics/reporter.py", "src/claude_analytics/aggregator.py"],
+      "rationale": "Copilot dashboard shows daily/weekly/monthly trend lines for all key metrics. The project only shows totals for the date range. Adding simple trend arrows (up/down/flat) would show momentum.",
+      "key_insight": "Split the reporting date range in half, compare totals, and display trend arrows (up/down/flat) next to key metrics like total active time and coding percentage."
+    },
+    {
+      "source_repo": "satomic/copilot-usage-advanced-dashboard",
+      "source_url": "https://github.com/satomic/copilot-usage-advanced-dashboard",
+      "category": "analytics",
+      "description": "Add top-project leaderboard ranked by active time",
+      "target": ["src/claude_analytics/reporter.py"],
+      "rationale": "Copilot dashboard has Top 10 user leaderboards with ranked bar charts. The project shows per-project breakdowns but doesn't rank them. A ranked mini-leaderboard adds quick scan value.",
+      "key_insight": "Sort projects by active time descending and display as a ranked list with proportional bars in the terminal report summary."
+    }
+  ]
+}

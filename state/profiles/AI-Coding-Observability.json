@@ -1,0 +1,20 @@
+{
+  "name": "AI-Coding-Observability",
+  "path": "/Users/michaelzuo/Engineering/AIDreamWorks/AIProductivity/AI-Coding-Observability",
+  "description": "Local-first Python CLI that parses Claude Code session logs to analyze AI-assisted development time — classifies interactions, calculates active time, measures AI code generation, and provides terminal reports plus a React dashboard.",
+  "github_topics": ["developer-tools", "ai-analytics", "cli"],
+  "awesome_lists": ["vinta/awesome-python", "agarrharr/awesome-cli-apps"],
+  "search_queries": [
+    "developer productivity analytics AI stars:>=200 sort:stars",
+    "code session analysis developer time tracking stars:>=100 sort:stars",
+    "LLM observability CLI Python stars:>=200 sort:stars"
+  ],
+  "relevance_keywords": {
+    "high": ["session logs", "developer productivity", "time tracking", "code analytics", "AI observability", "interaction classification", "code generation metrics"],
+    "medium": ["CLI reporting", "terminal dashboard", "JSONL parser", "activity categorization", "idle detection"],
+    "low": ["developer tools", "analytics", "observability"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve AI-Coding-Observability's session parsing, interaction classification, time analysis, reporting, or developer productivity insights?",
+  "test_command": "cd /Users/michaelzuo/Engineering/AIDreamWorks/AIProductivity/AI-Coding-Observability && python3 -m pytest tests/ -q",
+  "target_paths": ["src/claude_analytics/"]
+}
