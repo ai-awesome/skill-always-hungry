@@ -96,10 +96,11 @@ Write the profile to `$SKILL_ROOT/state/profiles/<project-name>.json`:
   "name": "<project-name>",
   "path": "<absolute path to project root>",
   "description": "<1-2 sentence project description>",
+  "github_topics": ["<2-3 GitHub topics most relevant to this project>"],
+  "awesome_lists": ["<1-2 awesome-list repos relevant to this project, e.g. sindresorhus/awesome-nodejs>"],
   "search_queries": [
-    "<query 1 — primary domain, stars:>=200 sort:updated>",
-    "<query 2 — key subsystem, stars:>=200 sort:updated>",
-    "<query 3 — tech stack + domain intersection, stars:>=100 sort:updated>"
+    "<query 1 — primary domain, stars:>=200 sort:stars>",
+    "<query 2 — key subsystem, stars:>=100 sort:stars>"
   ],
   "relevance_keywords": {
     "high": ["<5-8 keywords from project's core subsystems>"],
@@ -152,22 +153,46 @@ If `--profile` was specified, print "Profile regenerated for <project-name>" and
 Read `$SKILL_ROOT/state/profiles/<project-name>.json`.
 If it doesn't exist, run Profile Generation (see above) first.
 
-### Step 2 — Fetch repos
+### Step 2 — Fetch repos (prioritized sourcing)
 
-Use the GitHub MCP `search_repositories` tool with each query from the profile's `search_queries`:
+Source repos in priority order. Stop early once you have **20 repos** after filtering. Higher tiers yield higher-quality candidates.
+
+**Tier 1 — Top repos by GitHub topic (highest signal)**
+
+Search by the profile's `github_topics`, sorted by stars descending:
 
 ```
-mcp__github__search_repositories(query: "<search_query>", perPage: 20)
+mcp__github__search_repositories(query: "topic:<topic> stars:>=500 sort:stars", perPage: 10)
 ```
 
-Run each query. Deduplicate results by `full_name`.
+These are the most-starred repos in the project's domain — proven, high-quality code.
+
+**Tier 2 — Awesome lists (curated)**
+
+For each repo in the profile's `awesome_lists`, fetch its README:
+
+```
+mcp__github__get_file_contents(owner: "...", repo: "...", path: "README.md")
+```
+
+Parse the README for repo links (GitHub URLs). Extract up to 10 repos from each list. These are community-curated and pre-vetted.
+
+**Tier 3 — Keyword search (broad discovery)**
+
+Only if Tiers 1-2 yielded fewer than 20 repos. Use the profile's `search_queries`:
+
+```
+mcp__github__search_repositories(query: "<search_query>", perPage: 10)
+```
+
+Deduplicate all results across tiers by `full_name`.
 
 ### Step 3 — Filter
 
 From the combined results:
 - Remove forks (check `fork` field)
 - Remove repos not updated in the last 90 days (check `updated_at` field)
-- Keep at most 20 repos total
+- Keep at most 20 repos total, preferring higher tiers
 
 ### Step 4 — Dedup against state
 
