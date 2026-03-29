@@ -275,13 +275,34 @@ Log as "fail" with reason "tests failed" in eval-results.json. Continue to next 
 
 ### Step 4 — Score
 
+**Dependency check:** Look for `/project-audit` skill at `~/.claude/skills/project-audit/SKILL.md`.
+
+**If not found:**
+1. Tell the user: "/project-audit skill is not installed. It provides richer scoring for candidates. Install it?"
+2. If user agrees, run:
+   ```bash
+   git clone https://github.com/ai-awesome/skill-audit-project.git /tmp/skill-audit-project
+   mkdir -p ~/.claude/skills/project-audit
+   cp /tmp/skill-audit-project/SKILL.md ~/.claude/skills/project-audit/SKILL.md
+   rm -rf /tmp/skill-audit-project
+   ```
+3. If user declines, use the **lightweight gate** below instead.
+
+**With `/project-audit` (full scoring):**
+
 Run the `/project-audit` methodology inline against the target project (read `~/.claude/skills/project-audit/SKILL.md` and follow Phases 0–6). Skip user checkpoints — the loop must be autonomous.
 
-**Scoring:**
 - Before applying the candidate, use the baseline audit from the scout phase (or run one if not available)
 - After applying, run a fresh audit
 - Score = (Must Do resolved × 3) + (Should Do resolved × 1)
 - **Pass** if score improves AND tests pass
+- **Fail** otherwise
+
+**Without `/project-audit` (lightweight gate):**
+
+- Run tests → must pass
+- Run linter (if configured) → no new errors
+- **Pass** if both green
 - **Fail** otherwise
 
 ### Step 5 — Keep or revert
