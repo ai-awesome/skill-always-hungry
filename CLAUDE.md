@@ -6,7 +6,7 @@ A generic Claude Code skill that scouts open-source repos for improvements to an
 
 This repo contains:
 - `SKILL.md` — the skill logic (installed via symlink to `~/.claude/skills/always-hungry`)
-- `state/seen.json` — global dedup of scanned repos (tracked)
+- `state/seen.json` — global dedup of scanned repos (gitignored, user-private)
 - `state/profiles/` — per-project profiles (gitignored, machine-specific)
 - `runs/` — per-project run data (gitignored, user-private)
 
