@@ -1,0 +1,53 @@
+{
+  "date": "2026-03-29",
+  "project": "FeatureCrew",
+  "repos_scanned": 16,
+  "repos_with_new_content": 16,
+  "candidates": [
+    {
+      "source_repo": "dsifry/metaswarm",
+      "source_url": "https://github.com/dsifry/metaswarm",
+      "category": "agent-orchestration",
+      "description": "Add cross-model review recommendation to evaluator",
+      "target": ["plugin/agents/evaluator.md"],
+      "rationale": "metaswarm enforces that the writer is always reviewed by a different model to reduce systematic bias. FeatureCrew's evaluator already runs in a separate worktree but uses the same model. Adding a cross-model hint would make adversarial review more robust.",
+      "key_insight": "Recommend that the evaluator agent be dispatched with a different model than the implementer (e.g., if implementer uses Sonnet, evaluator uses Opus or vice versa). This eliminates shared model biases in scoring."
+    },
+    {
+      "source_repo": "dsifry/metaswarm",
+      "source_url": "https://github.com/dsifry/metaswarm",
+      "category": "self-learning",
+      "description": "Add post-ship knowledge extraction phase to orchestrator",
+      "target": ["plugin/skills/feature-crew/SKILL.md"],
+      "rationale": "metaswarm extracts patterns, gotchas, and anti-patterns after every PR merge into a persistent JSONL knowledge base. Future agents prime from this before tasks. FeatureCrew has per-feature metrics.json and an analyzer, but no persistent knowledge base that feeds back into future implementations.",
+      "key_insight": "After a feature reaches PRODUCTION, extract a knowledge entry from the feature's lifecycle (evaluator issues that recurred, strategies that worked, spec ambiguities found). Store in a shared knowledge file. The implementer reads relevant entries before starting new features."
+    },
+    {
+      "source_repo": "gsd-build/get-shit-done",
+      "source_url": "https://github.com/gsd-build/get-shit-done",
+      "category": "plan-quality",
+      "description": "Add plan verification step before implementation execution",
+      "target": ["plugin/skills/feature-crew/SKILL.md"],
+      "rationale": "GSD includes a plan-checking loop where plans are verified against requirements before execution, catching misalignment before expensive implementation work. FeatureCrew goes straight from plan to parallel implementation. A lightweight verification step could catch bad plans early.",
+      "key_insight": "After plan generation but before dispatching implementer agents, verify the plan covers all acceptance criteria from the spec. If any AC is not addressed by at least one plan item, flag it before spending tokens on implementation."
+    },
+    {
+      "source_repo": "gsd-build/get-shit-done",
+      "source_url": "https://github.com/gsd-build/get-shit-done",
+      "category": "diagnostics",
+      "description": "Add forensics/diagnose command for stuck features",
+      "target": ["plugin/skills/feature-crew/SKILL.md"],
+      "rationale": "GSD has /gsd:forensics for post-mortem investigation of stuck workflows — diagnosing loops, missing artifacts, git anomalies. FeatureCrew's BLOCKED state provides escalation but no automated root-cause analysis. A diagnose command would help users understand why a feature got stuck.",
+      "key_insight": "Add /feature-crew diagnose {name} that reads all eval reports, QA reports, metrics.json, and git state for a feature, then produces a root-cause analysis: what pattern is causing failures, which dimensions consistently score low, whether the issue is spec-level or implementation-level."
+    },
+    {
+      "source_repo": "attilaszasz/sdd-pilot",
+      "source_url": "https://github.com/attilaszasz/sdd-pilot",
+      "category": "qa-quality",
+      "description": "Add bug dependency ordering to QA agent output",
+      "target": ["plugin/agents/qa-agent.md"],
+      "rationale": "SDD Pilot's QC phase produces structured bug reports with dependency tracking so that when multiple bugs exist, the fix order is optimized. FeatureCrew's QA agent lists bugs by severity but doesn't indicate fix dependencies — e.g., Bug 2 might be caused by Bug 1, so fixing Bug 1 first could resolve both.",
+      "key_insight": "Add a 'Fix Order' section to the QA report that analyzes dependencies between bugs and recommends an optimal fix sequence. If Bug A and Bug B share a root cause, group them. If Bug C depends on Bug A being fixed first, order accordingly."
+    }
+  ]
+}

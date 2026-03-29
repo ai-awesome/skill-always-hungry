@@ -1,0 +1,41 @@
+{
+  "baseline_score": { "overall": 82, "must_do": 0, "should_do": 5 },
+  "final_score": { "overall": 87, "must_do": 0, "should_do": 0 },
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "source_repo": "dsifry/metaswarm",
+      "description": "Add cross-model adversarial review to evaluator",
+      "verdict": "pass",
+      "reason": "Clean merge, adds model diversity recommendation to evaluator agent"
+    },
+    {
+      "candidate_index": 2,
+      "source_repo": "dsifry/metaswarm",
+      "description": "Add post-ship knowledge extraction phase",
+      "verdict": "pass",
+      "reason": "Clean merge, adds knowledge.jsonl extraction and priming to orchestrator"
+    },
+    {
+      "candidate_index": 3,
+      "source_repo": "gsd-build/get-shit-done",
+      "description": "Add plan verification step before implementation",
+      "verdict": "pass",
+      "reason": "Clean merge, adds AC coverage check before dispatching implementers"
+    },
+    {
+      "candidate_index": 4,
+      "source_repo": "gsd-build/get-shit-done",
+      "description": "Add diagnose command for stuck features",
+      "verdict": "pass",
+      "reason": "Clean merge, adds forensic analysis command to orchestrator"
+    },
+    {
+      "candidate_index": 5,
+      "source_repo": "attilaszasz/sdd-pilot",
+      "description": "Add bug fix ordering to QA agent output",
+      "verdict": "pass",
+      "reason": "Clean merge, adds dependency-aware fix ordering to QA report"
+    }
+  ]
+}

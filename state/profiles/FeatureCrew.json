@@ -1,0 +1,20 @@
+{
+  "name": "FeatureCrew",
+  "path": "/Users/michaelzuo/Engineering/AIDreamWorks/AIProductivity/FeatureCrew",
+  "description": "A Claude Code plugin providing a crew of AI agents that take features from spec to production — clarifying requirements, parallel implementation with evaluator gates, and QA with automated bug fixing.",
+  "github_topics": ["claude-code", "ai-agents", "code-generation"],
+  "awesome_lists": ["e2b-dev/awesome-ai-agents", "slavakurilyak/awesome-ai-agents"],
+  "search_queries": [
+    "claude code plugin stars:>=50 sort:stars",
+    "AI agent code review evaluator stars:>=100 sort:stars",
+    "agentic coding workflow stars:>=200 sort:stars"
+  ],
+  "relevance_keywords": {
+    "high": ["claude-code", "evaluator", "code-review", "agent-orchestration", "spec-to-code", "quality-gate", "worktree"],
+    "medium": ["ai-agent", "code-generation", "test-driven", "multi-agent", "prompt-engineering"],
+    "low": ["developer-tools", "automation", "cli-tool"]
+  },
+  "triage_question": "Does this repo contain patterns that could improve FeatureCrew's agent orchestration, evaluation scoring, quality gates, or multi-phase development pipeline?",
+  "test_command": "echo 'no test suite — plugin is markdown skills and agent definitions'",
+  "target_paths": ["plugin/skills", "plugin/agents"]
+}
